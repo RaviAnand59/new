@@ -1,0 +1,42 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install backend dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: |
+          # Replace the following commands with your actual build commands for the frontend
+          # For example, if you're using a build tool like webpack or parcel:
+          # cd public && npm install && npm run build
+          # Or if you're just copying files:
+          # cp public/index.html dist/index.html
+
+      - name: Run backend tests
+        run: |
+          # Replace the following command with your actual command to run backend tests
+          # For example, if you're using Mocha and Chai for backend testing:
+          # npm test
+
+      # Add additional steps here as needed, such as running frontend tests, linters, or other checks

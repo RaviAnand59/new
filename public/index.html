@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <!-- Add any CSS styles here or link an external CSS file -->
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            margin-right: 10px;
+            width: 300px;
+        }
+        button {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        .delete-btn {
+            margin-left: auto;
+            background-color: #f44336;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task Manager</h1>
+    <!-- Form to add tasks -->
+    <form id="taskForm">
+        <input type="text" id="taskInput" placeholder="Enter task...">
+        <button type="submit">Add Task</button>
+    </form>
+    <!-- List of tasks -->
+    <ul id="taskList"></ul>
+
+    <!-- JavaScript code to interact with backend API -->
+    <script>
+        // Function to fetch tasks from backend and display them
+        async function fetchTasks() {
+            const response = await fetch('/tasks');
+            const data = await response.json();
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = ''; // Clear existing tasks
+            data.forEach(task => {
+                const listItem = document.createElement('li');
+                listItem.textContent = task;
+                // Add a delete button for each task
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.addEventListener('click', async () => {
+                    await deleteTask(task);
+                    fetchTasks(); // Refresh task list after deletion
+                });
+                listItem.appendChild(deleteBtn);
+                taskList.appendChild(listItem);
+            });
+        }
+
+        // Function to add a new task
+        async function addTask(task) {
+            const response = await fetch('/addTask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ task })
+            });
+            return response.json();
+        }
+
+        // Function to delete a task
+        async function deleteTask(task) {
+            const response = await fetch('/deleteTask', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ task })
+            });
+            return response.json();
+        }
+
+        // Event listener for submitting the task form
+        document.getElementById('taskForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const taskInput = document.getElementById('taskInput').value;
+            await addTask(taskInput);
+            document.getElementById('taskInput').value = ''; // Clear input field after adding task
+            fetchTasks(); // Refresh task list after adding task
+        });
+
+        // Fetch tasks when the page loads
+        fetchTasks();
+    </script>
+</body>
+</html>
