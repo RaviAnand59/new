@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Dummy array to store tasks (in memory)
+// Dummy array to store tasks (in memory  ok)
 let tasks = [];
 
 // Middleware to parse JSON bodies
